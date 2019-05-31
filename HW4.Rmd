@@ -29,6 +29,64 @@ Your task is to produce a 1 page memo, with supporting appendices, to advise cou
 questions, country Y) about how best to reduce carbon emissions. Your memo and appendices must address
 the following questions
 
+### Exploration for A
+```{r}
+
+MCA_plot <- ggplot (abatement, aes(x = Abatement, y = MC_A)) +
+  geom_line()
+
+MCA_plot
+
+degree_1 <- lm(abatement$MC_A ~ abatement$Abatement)
+
+summary(degree_1)
+
+
+```
+
+### Exploration for B
+```{r}
+
+MCB_plot <- ggplot (abatement, aes(x = Abatement, y = MC_B)) +
+  geom_line()
+
+MCB_plot
+
+degree_1 <- lm(abatement$MC_B ~ abatement$Abatement)
+
+summary(degree_1)
+
+degree_2 <- lm(abatement$MC_B ~ abatement$Abatement + I(abatement$Abatement^2))
+
+summary(degree_2)
+
+degree_3 <- lm(abatement$MC_B ~ abatement$Abatement + I(abatement$Abatement^2) + I(abatement$Abatement^3))
+
+summary(degree_3)
+
+degree_4 <- lm(abatement$MC_B ~ abatement$Abatement + I(abatement$Abatement^2) + I(abatement$Abatement^3) + I(abatement$Abatement^4))
+
+summary(degree_4)
+
+degree_5 <- lm(abatement$MC_B ~ abatement$Abatement + I(abatement$Abatement^2) + I(abatement$Abatement^3) + I(abatement$Abatement^4) + I(abatement$Abatement^5))
+
+summary(degree_5)
+
+degree_6 <- lm(abatement$MC_B ~ abatement$Abatement + I(abatement$Abatement^2) + I(abatement$Abatement^3) + I(abatement$Abatement^4) + I(abatement$Abatement^5)  + I(abatement$Abatement^6))
+
+summary(degree_6)
+
+degree_7 <- lm(abatement$MC_B ~ abatement$Abatement + I(abatement$Abatement^2) + I(abatement$Abatement^3) + I(abatement$Abatement^4) + I(abatement$Abatement^5)  + I(abatement$Abatement^6)+ I(abatement$Abatement^7))
+
+summary(degree_7)
+
+logit <- glm(abatement$MC_B ~ abatement$Abatement)
+
+summary(logit)
+
+```
+
+
 ###1.
 Write down a plausible functional form for the marginal cost of abatement for sector A. Use regression
 analysis to estimate the parameters of that function. Repeating this for sectors B, C, and D will give
