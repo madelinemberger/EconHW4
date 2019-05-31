@@ -84,6 +84,35 @@ summary(logit)
 
 ```
 
+### Exploration for C
+```{r}
+
+MCC_plot <- ggplot (abatement, aes(x = Abatement, y = MC_C)) +
+  geom_line()
+
+MCC_plot
+
+degree_1 <- lm(abatement$MC_C ~ abatement$Abatement)
+
+summary(degree_1)
+
+
+```
+
+### Exploration for D
+```{r}
+
+MCD_plot <- ggplot (abatement, aes(x = Abatement, y = MC_D)) +
+  geom_line()
+
+MCD_plot
+
+degree_1 <- lm(abatement$MC_D ~ abatement$Abatement)
+
+summary(degree_1)
+
+
+```
 
 ###1.
 Write down a plausible functional form for the marginal cost of abatement for sector A. Use regression analysis to estimate the parameters of that function. Repeating this for sectors B, C, and D will give you a model of the marginal cost of abatement function for each sector. How well do your models fit the data for each sector? You may need to experiment with different functional forms. Produce a plot of the estimated marginal abatement cost functions in all four sectors (this plot should go in your memo).
