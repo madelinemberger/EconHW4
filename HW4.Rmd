@@ -27,7 +27,7 @@ Current carbon emissions in the sectors are:
 
 Your task is to produce a 1 page memo, with supporting appendices, to advise country X (and in some questions, country Y) about how best to reduce carbon emissions. Your memo and appendices must address the following questions. 
 
-### Exploration for A
+### Exploration for A and assignment of values 
 ```{r}
 
 MCA_plot <- ggplot (abatement, aes(x = Abatement, y = MC_A)) +
@@ -35,14 +35,15 @@ MCA_plot <- ggplot (abatement, aes(x = Abatement, y = MC_A)) +
 
 MCA_plot
 
-degree_1 <- lm(abatement$MC_A ~ abatement$Abatement)
+degree_1A <- lm(abatement$MC_A ~ abatement$Abatement)
 
-summary(degree_1)
+summary(degree_1A)
 
-
+A_y_int <- degree_1A$coefficients[1]
+A_coeff <- degree_1A$coefficients[2]
 ```
 
-### Exploration for B
+### Exploration for B, C and D 
 ```{r}
 
 MCB_plot <- ggplot (abatement, aes(x = Abatement, y = MC_B)) +
@@ -50,37 +51,58 @@ MCB_plot <- ggplot (abatement, aes(x = Abatement, y = MC_B)) +
 
 MCB_plot
 
-degree_1 <- lm(abatement$MC_B ~ abatement$Abatement)
+########## B ##################
 
-summary(degree_1)
+degree_1B <- lm(abatement$MC_B ~ abatement$Abatement)
 
-degree_2 <- lm(abatement$MC_B ~ abatement$Abatement + I(abatement$Abatement^2))
+summary(degree_1B)
 
-summary(degree_2)
+B_y_int <- degree_1B$coefficients[1]
+B_coeff <- degree_1B$coefficients[2]
 
-degree_3 <- lm(abatement$MC_B ~ abatement$Abatement + I(abatement$Abatement^2) + I(abatement$Abatement^3))
+########### C ##############
 
-summary(degree_3)
+degree_1C <- lm(abatement$MC_C ~ abatement$Abatement)
 
-degree_4 <- lm(abatement$MC_B ~ abatement$Abatement + I(abatement$Abatement^2) + I(abatement$Abatement^3) + I(abatement$Abatement^4))
+summary(degree_1C)
 
-summary(degree_4)
+C_y_int <- degree_1C$coefficients[1]
+C_coeff <- degree_1C$coefficients[2]
 
-degree_5 <- lm(abatement$MC_B ~ abatement$Abatement + I(abatement$Abatement^2) + I(abatement$Abatement^3) + I(abatement$Abatement^4) + I(abatement$Abatement^5))
+########### D ##############
 
-summary(degree_5)
+degree_1D <- lm(abatement$MC_D ~ abatement$Abatement)
 
-degree_6 <- lm(abatement$MC_B ~ abatement$Abatement + I(abatement$Abatement^2) + I(abatement$Abatement^3) + I(abatement$Abatement^4) + I(abatement$Abatement^5)  + I(abatement$Abatement^6))
+summary(degree_1D)
 
-summary(degree_6)
+D_y_int <- degree_1D$coefficients[1]
+D_coeff <- degree_1D$coefficients[2]
 
-degree_7 <- lm(abatement$MC_B ~ abatement$Abatement + I(abatement$Abatement^2) + I(abatement$Abatement^3) + I(abatement$Abatement^4) + I(abatement$Abatement^5)  + I(abatement$Abatement^6)+ I(abatement$Abatement^7))
+#degree_2 <- lm(abatement$MC_B ~ abatement$Abatement + I(abatement$Abatement^2))
 
-summary(degree_7)
+#summary(degree_2)
 
-logit <- glm(abatement$MC_B ~ abatement$Abatement)
+#degree_3 <- lm(abatement$MC_B ~ abatement$Abatement + I(abatement$Abatement^2) + I(abatement$Abatement^3))
 
-summary(logit)
+#summary(degree_3)
+
+#degree_4 <- lm(abatement$MC_B ~ abatement$Abatement + I(abatement$Abatement^2) + I(abatement$Abatement^3) + I(abatement$Abatement^4))
+
+#summary(degree_4)
+
+#degree_5 <- lm(abatement$MC_B ~ abatement$Abatement + I(abatement$Abatement^2) + I(abatement$Abatement^3) + I(abatement$Abatement^4) + I(abatement$Abatement^5))
+
+#summary(degree_5)
+
+#degree_6 <- lm(abatement$MC_B ~ abatement$Abatement + I(abatement$Abatement^2) + I(abatement$Abatement^3) + I(abatement$Abatement^4) + I(abatement$Abatement^5)  + I(abatement$Abatement^6))
+
+#summary(degree_6)
+
+#degree_7 <- lm(abatement$MC_B ~ abatement$Abatement + I(abatement$Abatement^2) + I(abatement$Abatement^3) + I(abatement$Abatement^4) + I(abatement$Abatement^5)  + I(abatement$Abatement^6)+ I(abatement$Abatement^7))
+
+#summary(degree_7)
+
+
 
 ```
 
@@ -93,10 +115,41 @@ Write down a plausible functional form for the marginal cost of abatement for se
 #assuming the need to abate all the pollution
 
 A_sup <- function(q){
-  9.31770 + 0.19874*q
+  A_y_int + A_coeff*q
+}
+
+B_sup <-function(q){
+  B_y_int + B_coeff*q
+}
+
+C_sup <-function(q){
+  C_y_int + C_coeff*q
+}
+
+D_sup <-function(q){
+  D_y_int + D_coeff*q
 }
 
 
+ggplot(data.frame(x=c(0,200)), aes(x=x)) + 
+  stat_function(fun=A_sup, geom ="line", aes(color = "A")) + 
+  stat_function(fun=B_sup, geom ="line", aes(color = "B")) +
+  stat_function(fun=C_sup, geom ="line", aes(color = "C")) +
+  stat_function(fun=D_sup, geom ="line", aes(color = "D"))+
+  labs(x = "Abatement", y = "Price")+
+  scale_x_continuous(limits =c(0,110), expand = c(0,0))+
+  scale_y_continuous(limits=c(0,50), expand=c(0,0))+
+  theme_bw()
+
+
+```
+
+###2. 
+Using these models and the current level of carbon emissions, derive each sector’s demand curve for carbon emissions. In other words, how much would each sector be willing to pay for the right to pollute the first unit, second unit, etc? Draw these demand curves on a graph. Which sector is willing to pay the most for the first unit of carbon emissions?
+
+```{r}
+
+#Find demand curve for A
 A_flip <- function(p){
   (p-9.31770)/0.19874
 }
@@ -119,15 +172,6 @@ ggplot(data.frame(x=c(0,200)), aes(x=x)) +
   scale_x_continuous(limits =c(0,200), expand = c(0,0))+
   scale_y_continuous(limits=c(0,1000), expand=c(0,0))+
   theme_bw()
-
-
-```
-
-###2. 
-Using these models and the current level of carbon emissions, derive each sector’s demand curve for carbon emissions. In other words, how much would each sector be willing to pay for the right to pollute the first unit, second unit, etc? Draw these demand curves on a graph. Which sector is willing to pay the most for the first unit of carbon emissions?
-
-```{r}
-
 
 
 
