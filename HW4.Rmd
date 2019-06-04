@@ -110,7 +110,7 @@ D_coeff <- degree_1D$coefficients[2]
 ###1.
 Write down a plausible functional form for the marginal cost of abatement for sector A. Use regression analysis to estimate the parameters of that function. Repeating this for sectors B, C, and D will give you a model of the marginal cost of abatement function for each sector. How well do your models fit the data for each sector? You may need to experiment with different functional forms. Produce a plot of the estimated marginal abatement cost functions in all four sectors (this plot should go in your memo).
 
-```{r setup, include=FALSE}
+```{r}
 
 #assuming the need to abate all the pollution
 
@@ -131,16 +131,17 @@ D_sup <-function(q){
 }
 
 
-ggplot(data.frame(x=c(0,200)), aes(x=x)) + 
-  stat_function(fun=A_sup, geom ="line", aes(color = "A")) + 
-  stat_function(fun=B_sup, geom ="line", aes(color = "B")) +
-  stat_function(fun=C_sup, geom ="line", aes(color = "C")) +
-  stat_function(fun=D_sup, geom ="line", aes(color = "D"))+
-  labs(x = "Abatement", y = "Price")+
-  scale_x_continuous(limits =c(0,110), expand = c(0,0))+
-  scale_y_continuous(limits=c(0,50), expand=c(0,0))+
-  theme_bw()
+abate_plot <- ggplot(data.frame(x=c(0,200)), aes(x=x)) + 
+    stat_function(fun=A_sup, geom ="line", aes(color = "A")) + 
+    stat_function(fun=B_sup, geom ="line", aes(color = "B")) +
+    stat_function(fun=C_sup, geom ="line", aes(color = "C")) +
+    stat_function(fun=D_sup, geom ="line", aes(color = "D"))+
+    labs(x = "Abatement", y = "Price")+
+    scale_x_continuous(limits =c(0,110), expand = c(0,0))+
+    scale_y_continuous(limits=c(-15,50), expand=c(0,0))+
+    theme_bw()
 
+abate_plot
 
 ```
 
@@ -209,11 +210,10 @@ ggplot(data.frame(x=c(0,200)), aes(x=x)) +
   stat_function(fun=B_demand, geom ="line", aes(color = "Demand B")) +
   stat_function(fun=C_demand, geom ="line", aes(color = "Demand C")) +
   stat_function(fun=D_demand, geom ="line", aes(color = "Demand D")) +
-  labs(x = "Abatement", y = "Price")+
+  labs(x = "Emission", y = "Price")+
   scale_x_continuous(limits =c(0,200), expand = c(0,0))+
   scale_y_continuous(limits=c(0,200), expand=c(0,0))+
   theme_bw()
-
 
 
 
@@ -230,6 +230,31 @@ c. Cap and trade. Each sector (A, B, C) is allocated carbon permits equal to the
 minus 100 (same as in (a) above), thus achieving the total reduction of 300. Then, these three
 sectors are allowed to trade with each other. You will need to derive the outcome of that
 trading.
+
+```{r}
+#aggregate horizontally
+
+deno = A_coeff * B_coeff + A_coeff * C_coeff + B_coeff * C_coeff
+agg_y_int = (A_y_int*B_coeff*C_coeff/deno) + (B_y_int*A_coeff*C_coeff/deno) + (C_y_int*B_coeff*A_coeff/deno)
+agg_coeff = (A_coeff*B_coeff*C_coeff/deno)
+
+agg_abate_reverse <- function(x){
+  agg_coeff*x + agg_y_int
+}
+
+ggplot(data.frame(x=c(0,200)), aes(x=x)) + 
+    stat_function(fun=A_sup, geom ="line", aes(color = "A")) + 
+    stat_function(fun=B_sup, geom ="line", aes(color = "B")) +
+    stat_function(fun=C_sup, geom ="line", aes(color = "C")) +
+    stat_function(fun=agg_abate_reverse, geom ="line", aes(color = "Aggregated"))+
+    labs(x = "Abatement", y = "Price")+
+    scale_x_continuous(limits =c(0,300), expand = c(0,0))+
+    scale_y_continuous(limits=c(0,50), expand=c(0,0))+
+    theme_bw()
+
+
+```
+
 
 
 ```{r}
