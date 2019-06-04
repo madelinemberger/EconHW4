@@ -106,35 +106,6 @@ D_coeff <- degree_1D$coefficients[2]
 
 ```
 
-### Exploration for C
-```{r}
-
-MCC_plot <- ggplot (abatement, aes(x = Abatement, y = MC_C)) +
-  geom_line()
-
-MCC_plot
-
-degree_1 <- lm(abatement$MC_C ~ abatement$Abatement)
-
-summary(degree_1)
-
-
-```
-
-### Exploration for D
-```{r}
-
-MCD_plot <- ggplot (abatement, aes(x = Abatement, y = MC_D)) +
-  geom_line()
-
-MCD_plot
-
-degree_1 <- lm(abatement$MC_D ~ abatement$Abatement)
-
-summary(degree_1)
-
-
-```
 
 ###1.
 Write down a plausible functional form for the marginal cost of abatement for sector A. Use regression analysis to estimate the parameters of that function. Repeating this for sectors B, C, and D will give you a model of the marginal cost of abatement function for each sector. How well do your models fit the data for each sector? You may need to experiment with different functional forms. Produce a plot of the estimated marginal abatement cost functions in all four sectors (this plot should go in your memo).
@@ -178,28 +149,69 @@ Using these models and the current level of carbon emissions, derive each sector
 
 ```{r}
 
+############ A ################
 #Find demand curve for A
-A_flip <- function(p){
-  (p-9.31770)/0.19874
-}
+dem_y_A <- A_sup(180)
 
-#use the supply to find points to plut into the demand 
-A_int <- A_flip(180)
-
-slope_A <- (0-A_int)/(180-0)
+slope_A <- (0-dem_y_A)/(180-0)
 
 
 #demand curve as a function 
 A_demand <- function(q){
-  A_int + slope_A*q
+  dem_y_A + slope_A*q
 }
 
 
+############ B #############
+
+dem_y_B <- B_sup(200)
+
+slope_B <- (0-dem_y_B)/(200-0)
+
+
+#demand curve as a function 
+B_demand <- function(q){
+  dem_y_B + slope_B*q
+}
+
+
+########## C ##############
+
+dem_y_C <- C_sup(220)
+
+slope_C <- (0-dem_y_C)/(220-0)
+
+
+#demand curve as a function 
+C_demand <- function(q){
+  dem_y_C + slope_C*q
+}
+
+
+
+########## D ################
+
+dem_y_D <- D_sup(300)
+
+slope_D <- (0-dem_y_D)/(300-0)
+
+
+#demand curve as a function 
+D_demand <- function(q){
+  dem_y_D + slope_D*q
+}
+
+
+
+
 ggplot(data.frame(x=c(0,200)), aes(x=x)) + 
-  stat_function(fun=A_demand, geom ="line", aes(color = "Demand High")) + 
+  stat_function(fun=A_demand, geom ="line", aes(color = "Demand A")) + 
+  stat_function(fun=B_demand, geom ="line", aes(color = "Demand B")) +
+  stat_function(fun=C_demand, geom ="line", aes(color = "Demand C")) +
+  stat_function(fun=D_demand, geom ="line", aes(color = "Demand D")) +
   labs(x = "Abatement", y = "Price")+
   scale_x_continuous(limits =c(0,200), expand = c(0,0))+
-  scale_y_continuous(limits=c(0,1000), expand=c(0,0))+
+  scale_y_continuous(limits=c(0,200), expand=c(0,0))+
   theme_bw()
 
 
