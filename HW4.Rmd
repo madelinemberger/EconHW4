@@ -233,7 +233,18 @@ trading.
 
 
 ```{r}
+#aggregate horizontally 
 
+plot_x <- ggplot(data.frame(x=c(0,200)), aes(x=x)) + 
+  stat_function(fun=A_demand, geom ="line", aes(color = "Demand A")) + 
+  stat_function(fun=B_demand, geom ="line", aes(color = "Demand B")) +
+  stat_function(fun=C_demand, geom ="line", aes(color = "Demand C")) +
+  labs(x = "Abatement", y = "Price")+
+  scale_x_continuous(limits =c(0,200), expand = c(0,0))+
+  scale_y_continuous(limits=c(0,200), expand=c(0,0))+
+  theme_bw()
+
+plot_x
 ```
 
 
