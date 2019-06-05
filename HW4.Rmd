@@ -11,11 +11,15 @@ output: html_document
 library(tidyverse)
 library(ggplot2)
 library(stargazer)
+library(rootSolve)
+library(ggpubr)
+library(knitr)
 
 
 abatement <- read.csv("HW4Data.csv")
 
 ```
+
 
 
 Notes: 
@@ -171,7 +175,9 @@ A_demand <- function(q){
 
 dem_y_B <- B_sup(200)
 
-slope_B <- (0-dem_y_B)/(200-0)
+B_0 <- B_sup(0)
+
+slope_B <- (B_0-dem_y_B)/(200-0)
 
 
 #demand curve as a function 
@@ -184,7 +190,9 @@ B_demand <- function(q){
 
 dem_y_C <- C_sup(220)
 
-slope_C <- (0-dem_y_C)/(220-0)
+C_0 <- C_sup(0)
+
+slope_C <- (C_0-dem_y_C)/(220-0)
 
 
 #demand curve as a function 
@@ -198,7 +206,9 @@ C_demand <- function(q){
 
 dem_y_D <- D_sup(300)
 
-slope_D <- (0-dem_y_D)/(300-0)
+D_0 <- D_sup(0)
+
+slope_D <- (D_0-dem_y_D)/(300-0)
 
 
 #demand curve as a function 
@@ -215,7 +225,7 @@ ggplot(data.frame(x=c(0,200)), aes(x=x)) +
   stat_function(fun=C_demand, geom ="line", aes(color = "Demand C")) +
   stat_function(fun=D_demand, geom ="line", aes(color = "Demand D")) +
   labs(x = "Emission", y = "Price")+
-  scale_x_continuous(limits =c(0,200), expand = c(0,0))+
+  scale_x_continuous(limits =c(0,400), expand = c(0,0))+
   scale_y_continuous(limits=c(0,200), expand=c(0,0))+
   theme_bw()
 
@@ -236,23 +246,54 @@ trading.
 ```{r}
 #aggregate horizontally
 
-deno = A_coeff * B_coeff + A_coeff * C_coeff + B_coeff * C_coeff
-agg_y_int = (A_y_int*B_coeff*C_coeff/deno) + (B_y_int*A_coeff*C_coeff/deno) + (C_y_int*B_coeff*A_coeff/deno)
-agg_coeff = (A_coeff*B_coeff*C_coeff/deno)
+deno_ABC = A_coeff * B_coeff + A_coeff * C_coeff + B_coeff * C_coeff
+agg_y_int_ABC = (A_y_int*B_coeff*C_coeff/deno_ABC) + (B_y_int*A_coeff*C_coeff/deno_ABC) + (C_y_int*B_coeff*A_coeff/deno_ABC)
+agg_coeff_ABC = (A_coeff*B_coeff*C_coeff/deno_ABC)
 
-agg_abate_reverse <- function(x){
-  agg_coeff*x + agg_y_int
+agg_abate_ABC <- function(x){
+  agg_coeff_ABC*x + agg_y_int_ABC
 }
 
-ggplot(data.frame(x=c(0,200)), aes(x=x)) + 
-    stat_function(fun=A_sup, geom ="line", aes(color = "A")) + 
-    stat_function(fun=B_sup, geom ="line", aes(color = "B")) +
-    stat_function(fun=C_sup, geom ="line", aes(color = "C")) +
-    stat_function(fun=agg_abate_reverse, geom ="line", aes(color = "Aggregated"))+
-    labs(x = "Abatement", y = "Price")+
-    scale_x_continuous(limits =c(0,300), expand = c(0,0))+
-    scale_y_continuous(limits=c(0,50), expand=c(0,0))+
-    theme_bw()
+tax_price <- agg_abate_ABC(300)
+unit_A <- (tax_price - A_y_int)/A_coeff
+unit_B <- (tax_price - B_y_int)/B_coeff
+unit_C <- (tax_price - C_y_int)/C_coeff
+
+agg_AC <- function(x){
+  (A_coeff*C_coeff/(A_coeff+C_coeff)) * x + (A_y_int*C_coeff+C_y_int*A_coeff)/(A_coeff+C_coeff)
+}
+
+int_AC <- (A_y_int - C_y_int)/C_coeff
+
+int_ABC <- (B_y_int - (A_y_int*C_coeff+C_y_int*A_coeff)/(A_coeff+C_coeff))/(A_coeff*C_coeff/(A_coeff+C_coeff))
+
+agg_abate <- function(x){
+  if(x<int_AC) {
+    C_y_int + C_coeff*x
+  } else if (x >= int_AC && x <= int_ABC) {
+    (A_coeff*C_coeff/(A_coeff+C_coeff)) * x + (A_y_int*C_coeff+C_y_int*A_coeff)/(A_coeff+C_coeff)
+  } else {
+    agg_coeff_ABC*x + agg_y_int_ABC
+  }
+}
+
+agg_abate <- Vectorize(agg_abate)
+
+ggplot(data.frame(x=c(0,500)), aes(x=x)) + 
+  stat_function(fun=A_sup, geom ="line", aes(color = "Abatement A"), size = 0.3) + 
+  stat_function(fun=B_sup, geom ="line", aes(color = "Abatement B"), size = 0.3) +
+  stat_function(fun=C_sup, geom ="line", aes(color = "Abatement C"), size = 0.3) +
+  stat_function(fun=agg_abate, geom ="line", aes(color = "Aggregated"), size = 1.0)+
+  labs(x = "Abatement", y = "Price ($/ton)")+
+  scale_x_continuous(limits =c(0,400), expand = c(0,0))+
+  scale_y_continuous(limits=c(-20,60), expand=c(0,0))+
+  geom_hline(yintercept = tax_price, linetype = "dashed")+
+  geom_vline(xintercept = 300, linetype = "dashed")+
+  geom_vline(xintercept = unit_A, linetype = "dashed", size = 0.3)+
+  geom_vline(xintercept = unit_B, linetype = "dashed", size = 0.3)+
+  geom_vline(xintercept = unit_C, linetype = "dashed", size = 0.3)+
+  scale_color_brewer("Abatement Curve", palette = "Dark2")+
+  theme_pubr()
 
 
 ```
@@ -274,11 +315,34 @@ plot_x <- ggplot(data.frame(x=c(0,200)), aes(x=x)) +
 plot_x
 ```
 
+```{r}
+#solve the benefit for a, cap for carbon
+
+cost_cap_A_X <- integrate(A_sup, 0, 100)$value
+cost_cap_B_X <- integrate(B_sup, 0, 100)$value
+cost_cap_C_X <- integrate(C_sup, 0, 100)$value
+cost_cap_total <- cost_cap_A_X + cost_cap_B_X + cost_cap_C_X
+
+```
+
+```{r}
+#solve the benefit for b, tax for carbon
+
+cost_tax_A_X <- integrate(A_sup, 0, unit_A)$value
+cost_tax_B_X <- integrate(B_sup, 0, unit_B)$value
+cost_tax_C_X <- integrate(C_sup, 0, unit_C)$value
+cost_tax_total <- cost_tax_A_X + cost_tax_B_X + cost_tax_C_X
+
+tax_revenue_X <- 300*tax_price
+
+```
 
 ###4. 
 Again, without any co-benefits, suppose that country Y (which only has one carbon-emitting sector, D) has no obligation to reduce its emissions. Country X asks country Y to enter the country X carbon market. Doing so would require country Y to put a cap on carbon emissions at its current level of emissions (300 tons), but would then allow country Y to sell carbon offsets to sectors A, B, or C. Are there any incentives for country Y to enter country X’s carbon market and to thus place a voluntary cap on its emissions? Are there any incentives for country X to try to attract country Y into its market?
 
 ```{r}
+
+price_lastunit_D <- D_sup(300)
 
 ```
 
@@ -292,6 +356,55 @@ c. What advice can you give country X and country Y about the desirability of al
 international trade of carbon emissions credits?
 
 ```{r}
+
+deno_ABCD <- A_coeff*B_coeff*C_coeff + D_coeff*B_coeff*C_coeff + A_coeff*D_coeff*C_coeff + A_coeff*B_coeff*D_coeff
+agg_y_int_ABCD = (A_y_int*B_coeff*C_coeff*D_coeff/deno_ABCD) + (B_y_int*A_coeff*C_coeff*D_coeff/deno_ABCD) + (C_y_int*B_coeff*A_coeff*D_coeff/deno_ABCD) + (D_y_int*B_coeff*C_coeff*A_coeff/deno_ABCD)
+agg_coeff_ABCD = (A_coeff*B_coeff*C_coeff*D_coeff/deno_ABCD)
+
+agg_abate_ABCD <- function(x){
+  agg_coeff_ABCD*x + agg_y_int_ABCD
+}
+
+tax_price_ABCD <- agg_abate_ABCD(600)
+unit_A_XY <- (tax_price_ABCD - A_y_int)/A_coeff
+unit_B_XY <- (tax_price_ABCD - B_y_int)/B_coeff
+unit_C_XY <- (tax_price_ABCD - C_y_int)/C_coeff
+unit_D_XY <- (tax_price_ABCD - D_y_int)/D_coeff
+
+int_ABCD <- (D_y_int - agg_y_int_ABC)/agg_coeff_ABC
+
+agg_abate_ABCD <- function(x){
+  if(x<int_AC) {
+    C_y_int + C_coeff*x
+  } else if (x >= int_AC && x < int_ABC) {
+    (A_coeff*C_coeff/(A_coeff+C_coeff)) * x + (A_y_int*C_coeff+C_y_int*A_coeff)/(A_coeff+C_coeff)
+  } else if (x >= int_ABC && x < int_ABCD) {
+    agg_coeff_ABC*x + agg_y_int_ABC
+  } else {
+    agg_coeff_ABCD*x + agg_y_int_ABCD
+  }
+}
+
+agg_abate_ABCD <- Vectorize(agg_abate_ABCD)
+
+ggplot(data.frame(x=c(0,500)), aes(x=x)) + 
+  stat_function(fun=A_sup, geom ="line", aes(color = "Abatement A"), size = 0.3) + 
+  stat_function(fun=B_sup, geom ="line", aes(color = "Abatement B"), size = 0.3) +
+  stat_function(fun=C_sup, geom ="line", aes(color = "Abatement C"), size = 0.3) +
+  stat_function(fun=D_sup, geom ="line", aes(color = "Abatement D"), size = 0.3) +
+  stat_function(fun=agg_abate_ABCD, geom ="line", aes(color = "Aggregated"), size = 1.0)+
+  labs(x = "Abatement", y = "Price ($/ton)")+
+  scale_x_continuous(limits =c(0,800), expand = c(0,0))+
+  scale_y_continuous(limits=c(-20,60), expand=c(0,0))+
+  scale_color_brewer("Abatement", palette = "Dark2")+
+  geom_hline(yintercept = tax_price_ABCD, linetype = "dashed")+
+  geom_vline(xintercept = 600, linetype = "dashed")+
+  geom_vline(xintercept = unit_A_XY, linetype = "dashed", size = 0.3)+
+  geom_vline(xintercept = unit_B_XY, linetype = "dashed", size = 0.3)+
+  geom_vline(xintercept = unit_C_XY, linetype = "dashed", size = 0.3)+
+  geom_vline(xintercept = unit_D_XY, linetype = "dashed", size = 0.3)+
+  theme_pubr()
+
 
 ```
 
