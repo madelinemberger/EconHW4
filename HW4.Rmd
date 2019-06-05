@@ -154,7 +154,11 @@ Using these models and the current level of carbon emissions, derive each sector
 #Find demand curve for A
 dem_y_A <- A_sup(180)
 
-slope_A <- (0-dem_y_A)/(180-0)
+A_0 <- A_sup(0)
+
+slope_A <- (A_0 - dem_y_A)/(180-0)
+
+ #x intercept for demand curve should be found using y intercept of supply 
 
 
 #demand curve as a function 
@@ -222,13 +226,11 @@ ggplot(data.frame(x=c(0,200)), aes(x=x)) +
 
 ###3. 
 3. Now focus on country X (which contains sectors A, B, and C). Assume there are no “co-benefits” from carbon abatement (i.e. that there are no local pollutants that are affected by carbon abatement). Suppose to meet the Paris Accord commitments, country X needs to cut all carbon emissions in half. For each of the policy options listed below, derive: (1) the total cost of meeting the target in country X, (2) the cost (or benefit) to each sector, and (3) the tax revenue generated.
+
 a. Cap on carbon. Each sector (A, B, and C) must cut its carbon emissions by 100 tons (thus
 reducing total emissions from 600 down to 300).
-b. Tax on carbon. To emit a ton of carbon in country X, you must pay a tax of $t. You will need to
-find the tax that accomplishes the desired reduction.
-c. Cap and trade. Each sector (A, B, C) is allocated carbon permits equal to their current emissions
-minus 100 (same as in (a) above), thus achieving the total reduction of 300. Then, these three
-sectors are allowed to trade with each other. You will need to derive the outcome of that
+b. Tax on carbon. To emit a ton of carbon in country X, you must pay a tax of $t. You will need to find the tax that accomplishes the desired reduction.
+c. Cap and trade. Each sector (A, B, C) is allocated carbon permits equal to their current emissionsminus 100 (same as in (a) above), thus achieving the total reduction of 300. Then, these three sectors are allowed to trade with each other. You will need to derive the outcome of that
 trading.
 
 ```{r}
