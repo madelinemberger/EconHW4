@@ -368,23 +368,11 @@ Again, without any co-benefits, suppose that country Y (which only has one carbo
 price_lastunit_D <- D_sup(300)
 #if this price is higher than the equilibrium from country X, country Y will purchase from country X
 
-#cap and trade with y 
-
-
 
 
 ```
 
 
-
-###5. 
-Now assume that every ton of carbon emissions creates 1 ton of local air pollution. Local air pollution causes economic damages (health, environmental, etc.), but only in the country in which it is emitted. Assume there are no local air pollution regulations in either country X or country Y.
-
-a. In a carbon cap and trade market that only covers sectors in country X, how much local air
-pollution would you expect in country X? In country Y?
-b. If country Y enters the carbon market for country X (as in question 4 above), how much local pollution will there be in country X and country Y?
-c. What advice can you give country X and country Y about the desirability of allowing
-international trade of carbon emissions credits?
 
 ```{r}
 
@@ -396,7 +384,7 @@ agg_abate_ABCD <- function(x){
   agg_coeff_ABCD*x + agg_y_int_ABCD
 }
 
-tax_price_ABCD <- agg_abate_ABCD(600)
+tax_price_ABCD <- agg_abate_ABCD(300)
 unit_A_XY <- (tax_price_ABCD - A_y_int)/A_coeff
 unit_B_XY <- (tax_price_ABCD - B_y_int)/B_coeff
 unit_C_XY <- (tax_price_ABCD - C_y_int)/C_coeff
@@ -429,7 +417,7 @@ ggplot(data.frame(x=c(0,500)), aes(x=x)) +
   scale_y_continuous(limits=c(-20,60), expand=c(0,0))+
   scale_color_brewer("Abatement", palette = "Dark2")+
   geom_hline(yintercept = tax_price_ABCD, linetype = "dashed")+
-  geom_vline(xintercept = 600, linetype = "dashed")+
+  geom_vline(xintercept = 300, linetype = "dashed")+
   geom_vline(xintercept = unit_A_XY, linetype = "dashed", size = 0.3)+
   geom_vline(xintercept = unit_B_XY, linetype = "dashed", size = 0.3)+
   geom_vline(xintercept = unit_C_XY, linetype = "dashed", size = 0.3)+
@@ -437,7 +425,30 @@ ggplot(data.frame(x=c(0,500)), aes(x=x)) +
   theme_pubr()
 
 
+
+#cap and trade with country y and country x
+
+A_trade_xy <- (180-unit_A_XY-80)
+B_trade_xy <- (200-unit_B_XY-100)
+C_trade_xy <-(220-unit_C_XY-120)
+D_trade_xy <-(300-unit_D_XY-300)
+
+A_trans_XY <- A_trade_xy*tax_price_ABCD #A buy this
+B_trans_XY <- B_trade_xy*tax_price_ABCD #B sells this (have more than enought)
+C_trans_XY <- C_trade_xy*tax_price_ABCD #C buys this 
+D_trans_XY <- D_trade_xy*tax_price_ABCD #D sells this
+
+
+
 ```
+###5. 
+Now assume that every ton of carbon emissions creates 1 ton of local air pollution. Local air pollution causes economic damages (health, environmental, etc.), but only in the country in which it is emitted. Assume there are no local air pollution regulations in either country X or country Y.
+
+a. In a carbon cap and trade market that only covers sectors in country X, how much local air
+pollution would you expect in country X? In country Y?
+b. If country Y enters the carbon market for country X (as in question 4 above), how much local pollution will there be in country X and country Y?
+c. What advice can you give country X and country Y about the desirability of allowing
+international trade of carbon emissions credits?
 
 ####.a
 
@@ -450,6 +461,9 @@ pol_x <- unit_A+unit_B+unit_C
 pol_y <- 300
 
 #b. If country Y enters the carbon market for country X (as in question 4 above), how much local pollution will there be in country X and country Y?
+
+
+
 
 
 
