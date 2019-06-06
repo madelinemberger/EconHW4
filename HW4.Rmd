@@ -11,7 +11,6 @@ output: html_document
 library(tidyverse)
 library(ggplot2)
 library(stargazer)
-library(rootSolve)
 library(ggpubr)
 library(knitr)
 
@@ -255,7 +254,7 @@ agg_abate_ABC <- function(x){
 }
 
 tax_price <- agg_abate_ABC(300)
-unit_A <- (tax_price - A_y_int)/A_coeff
+unit_A <- (tax_price - A_y_int)/A_coeff #how much each sector pollutes with the 300 cap
 unit_B <- (tax_price - B_y_int)/B_coeff
 unit_C <- (tax_price - C_y_int)/C_coeff
 
@@ -275,7 +274,7 @@ agg_abate <- function(x){
   } else {
     agg_coeff_ABC*x + agg_y_int_ABC
   }
-}
+} #create piecewise function of agg demand
 
 agg_abate <- Vectorize(agg_abate)
 
@@ -314,19 +313,23 @@ plot_x <- ggplot(data.frame(x=c(0,200)), aes(x=x)) +
 
 plot_x
 ```
-
+####a.
 ```{r}
-#solve the benefit for a, cap for carbon
+
+#solve the cost for a,b,c cap for carbon
 
 cost_cap_A_X <- integrate(A_sup, 0, 100)$value
 cost_cap_B_X <- integrate(B_sup, 0, 100)$value
 cost_cap_C_X <- integrate(C_sup, 0, 100)$value
 cost_cap_total <- cost_cap_A_X + cost_cap_B_X + cost_cap_C_X
 
+#no tax revenue generated
+
 ```
 
+####b.
 ```{r}
-#solve the benefit for b, tax for carbon
+#solve the benefit for a,b,c tax for carbon
 
 cost_tax_A_X <- integrate(A_sup, 0, unit_A)$value
 cost_tax_B_X <- integrate(B_sup, 0, unit_B)$value
@@ -337,21 +340,49 @@ tax_revenue_X <- 300*tax_price
 
 ```
 
+####c.
+
+```{r}
+
+#solve for the benefit for a,b,c for cap and trade
+#(A=180, B=200, C=220, and D=300)
+
+A_trade <- (180-unit_A-80)
+B_trade <- (200-unit_B-100)
+C_trade <-(220-unit_C-120)
+
+A_trans <- A_trade*tax_price #A buys this
+B_trans <- B_trade*tax_price #B sells this 
+C_trans <- C_trade*tax_price #C buys this 
+
+
+```
+
+
+
 ###4. 
 Again, without any co-benefits, suppose that country Y (which only has one carbon-emitting sector, D) has no obligation to reduce its emissions. Country X asks country Y to enter the country X carbon market. Doing so would require country Y to put a cap on carbon emissions at its current level of emissions (300 tons), but would then allow country Y to sell carbon offsets to sectors A, B, or C. Are there any incentives for country Y to enter country X’s carbon market and to thus place a voluntary cap on its emissions? Are there any incentives for country X to try to attract country Y into its market?
 
 ```{r}
 
 price_lastunit_D <- D_sup(300)
+#if this price is higher than the equilibrium from country X, country Y will purchase from country X
+
+#cap and trade with y 
+
+
+
 
 ```
 
+
+
 ###5. 
 Now assume that every ton of carbon emissions creates 1 ton of local air pollution. Local air pollution causes economic damages (health, environmental, etc.), but only in the country in which it is emitted. Assume there are no local air pollution regulations in either country X or country Y.
+
 a. In a carbon cap and trade market that only covers sectors in country X, how much local air
 pollution would you expect in country X? In country Y?
-b. If country Y enters the carbon market for country X (as in question 4 above), how much local
-pollution will there be in country X and country Y?
+b. If country Y enters the carbon market for country X (as in question 4 above), how much local pollution will there be in country X and country Y?
 c. What advice can you give country X and country Y about the desirability of allowing
 international trade of carbon emissions credits?
 
@@ -404,6 +435,22 @@ ggplot(data.frame(x=c(0,500)), aes(x=x)) +
   geom_vline(xintercept = unit_C_XY, linetype = "dashed", size = 0.3)+
   geom_vline(xintercept = unit_D_XY, linetype = "dashed", size = 0.3)+
   theme_pubr()
+
+
+```
+
+####.a
+
+```{r}
+
+#a. In a carbon cap and trade market that only covers sectors in country X, how much local air pollution would you expect in country X? In country Y?
+
+pol_x <- unit_A+unit_B+unit_C
+
+pol_y <- 300
+
+#b. If country Y enters the carbon market for country X (as in question 4 above), how much local pollution will there be in country X and country Y?
+
 
 
 ```
