@@ -355,6 +355,11 @@ A_trans <- A_trade*tax_price #A buys this
 B_trans <- B_trade*tax_price #B sells this 
 C_trans <- C_trade*tax_price #C buys this 
 
+#net costs to each sector nc = net costs
+A_trade_nc <- cost_tax_A_X + A_trans
+B_trade_nc <- cost_tax_B_X + B_trans
+C_trade_nc <- cost_tax_C_X + C_trans
+
 
 ```
 
@@ -467,8 +472,10 @@ pol_x_after <- 600 - (unit_A_XY+unit_B_XY+unit_C_XY)
 pol_y_after <- 300 - unit_D_XY
 
 
+#c. What advice can you give country X and country Y about the desirability of allowing international trade of carbon emissions credits?
 
-
+#pollution X worsens
+#pollution Y improves 
 
 ```
 
