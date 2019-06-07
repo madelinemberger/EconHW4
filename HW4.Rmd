@@ -367,6 +367,7 @@ Again, without any co-benefits, suppose that country Y (which only has one carbo
 
 price_lastunit_D <- D_sup(300)
 #if this price is higher than the equilibrium from country X, country Y will purchase from country X
+#Wrong argument! Country Y wants to enter since they are not above their permit now, since they dont cost any money on abatement at this point, so we need to consider the FIRST unit instead of the LAST unit
 
 
 
@@ -456,12 +457,14 @@ international trade of carbon emissions credits?
 
 #a. In a carbon cap and trade market that only covers sectors in country X, how much local air pollution would you expect in country X? In country Y?
 
-pol_x <- unit_A+unit_B+unit_C
+pol_x <- 600 - (unit_A+unit_B+unit_C)
 
 pol_y <- 300
 
 #b. If country Y enters the carbon market for country X (as in question 4 above), how much local pollution will there be in country X and country Y?
 
+pol_x_after <- 600 - (unit_A_XY+unit_B_XY+unit_C_XY)
+pol_y_after <- 300 - unit_D_XY
 
 
 
