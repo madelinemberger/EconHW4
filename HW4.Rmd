@@ -2,7 +2,9 @@
 title: "Econ HW 4"
 author: "Madeline Berger and Ted Jiang"
 date: "5/30/2019"
-output: html_document
+output: 
+  pdf_document: default
+  latex_engine: xelatex
 ---
 
 ###Technical Appendix
@@ -148,19 +150,24 @@ abate_plot
   
     
     
-**Functions:**  
+**Functions and Fit:**  
 
 $Marginal~Cost~of~Abatement~A = `r A_coeff`*q + (`r A_y_int`)$
 
+$Fit: r squared =  0.904$
+
 $Marginal~Cost~of~Abatement~B = `r B_coeff`*q + (`r B_y_int`)$
 
-$Marginal~Cost~of~Abatement~B = `r C_coeff`*q + (`r C_y_int`)$
+$Fit: r squared =  0.5355$
 
-$Marginal~Cost~of~Abatement~D  = `r D_coeff`*q + (`r D_y_int`)$
-  
-  
-**Fit:**
+$Marginal~Cost~of~Abatement~B = `r C_coeff`*q + (`r C_y_int`)$  
 
+$Fit: r squared = 0.8663$
+
+$Marginal~Cost~of~Abatement~D  = `r D_coeff`*q + (`r D_y_int`)$  
+
+$Fit: r squared = 0.5108$
+  
 
 
 
