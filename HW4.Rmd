@@ -325,13 +325,17 @@ plot_x <- ggplot(data.frame(x=c(0,200)), aes(x=x)) +
   stat_function(fun=A_demand, geom ="line", aes(color = "Demand A")) + 
   stat_function(fun=B_demand, geom ="line", aes(color = "Demand B")) +
   stat_function(fun=C_demand, geom ="line", aes(color = "Demand C")) +
-  labs(x = "Abatement", y = "Price")+
+  labs(x = "Demand", y = "Price")+
   scale_x_continuous(limits =c(0,200), expand = c(0,0))+
   scale_y_continuous(limits=c(0,200), expand=c(0,0))+
   theme_bw()
 
 plot_x
 ```
+
+To find the amount of carbon that would be abated in country X, the abatement curve for all three industries were aggregated. We found where this intersected with 300, the total amount of carbon. 
+
+
 ####a. Cap 
 ```{r, include = FALSE}
 
@@ -345,6 +349,16 @@ cost_cap_total <- cost_cap_A_X + cost_cap_B_X + cost_cap_C_X
 #no tax revenue generated
 
 ```
+Under a cap scenario, each industry reduced their emissions by the same amount, 100 tons. By integrating under each separate abatement curve to 100, we found the costs to each sector as well as the total costs under a 300 ton carbon cap. 
+
+$Cost~Cap~A = `r round(cost_cap_A_X, digits = 2)`$  
+
+$Cost~Cap~B = `r round(cost_cap_B_X, digits =2)`$  
+
+$Cost~Cap~C = `r round(cost_cap_C_X, digits = 2)`$  
+
+$Total~Cost~Cap = `r round(cost_cap_total, digits = 2)`$  
+
 
 ####b. Tax
 ```{r, include = FALSE}
@@ -355,10 +369,10 @@ cost_tax_A_X <- integrate(A_sup, 0, unit_A)$value
 total_A_X <- cost_cap_A_X + ((180-unit_A)*tax_price)
 
 cost_tax_B_X <- integrate(B_sup, 0, unit_B)$value
-total_A_X <- cost_cap_A_X + ((200-unit_B)*tax_price)
+total_B_X <- cost_cap_B_X + ((200-unit_B)*tax_price)
 
 cost_tax_C_X <- integrate(C_sup, 0, unit_C)$value
-total_A_X <- cost_cap_A_X + ((220-unit_C)*tax_price)
+total_C_X <- cost_cap_C_X + ((220-unit_C)*tax_price)
 
 cost_tax_total <- cost_tax_A_X + cost_tax_B_X + cost_tax_C_X #you dont need the revenue here
 
@@ -370,6 +384,17 @@ tax_revenue_X <- 300*tax_price
 
 
 ```
+
+Under a tax scenario, we found the price where the aggregate abatement curve intersected the objective abatement amount. We then found what amount each sector would abate at this price, and integrated under each abatement curve to that amount. We then added the tax that each sector must pay on their remaining emissions (stauts quo - abatement amount) to the costs for each sector. 
+
+$Cost~Tax~A = `r round(total_A_X, digits = 2)`$  
+
+$Cost~Tax~B = `r round(total_B_X, digits = 2)`$  
+
+$Cost~Tax~C = `r round(total_C_X, digits = 2)`$  
+
+$Total~cost~tax = `r round(cost_tax_total, digits =2)`$  
+
 
 ####c. Cap and Trade
 ```{r, include = FALSE}
@@ -392,8 +417,15 @@ C_trade_nc <- cost_tax_C_X + C_trans
 
 total_cost_cap <- A_trade_nc + B_trade_nc + C_trade_nc
 ```
+For cap and trade, the same quantity and price from the carbon tax scenario are used. Given the intial allocation rights for each industry, we solved for the amount of emissions that each sector would need to buy or want to sell, then multiplied that by the price to find the amount for each transaction. We then added (for buy) or subtracted (for sell) the transaction amounts to find the total costs to each sector. 
 
+$Cost~Trade~A = `r round(A_trade_nc, digits = 2)`$  
 
+$Cost~Trade~B = `r round(B_trade_nc, digits = 2)`$  
+
+$Cost~Trade~C = `r round(C_trade_nc, digits = 2)`$  
+
+$Total~Cost~Trade = `r round(total_cost_cap, digits = 2)`$  
 
 ###4. 
 Again, without any co-benefits, suppose that country Y (which only has one carbon-emitting sector, D) has no obligation to reduce its emissions. Country X asks country Y to enter the country X carbon market. Doing so would require country Y to put a cap on carbon emissions at its current level of emissions (300 tons), but would then allow country Y to sell carbon offsets to sectors A, B, or C. Are there any incentives for country Y to enter country X’s carbon market and to thus place a voluntary cap on its emissions? Are there any incentives for country X to try to attract country Y into its market?
@@ -495,15 +527,14 @@ total_costs_y_ABCD <- D_trade_nc_XY
 #y costs = abatement costs - sell *price
 ```
 
+(See memo for full discussion)
+
+Country X further decreases total costs if Y enters the cap and trade program. 
+Country Y will be able to sell credits to X, and therefore gain value since the price is greater than Country Y's cost of abatement.
 
 ###5. 
 Now assume that every ton of carbon emissions creates 1 ton of local air pollution. Local air pollution causes economic damages (health, environmental, etc.), but only in the country in which it is emitted. Assume there are no local air pollution regulations in either country X or country Y.
 
-a. In a carbon cap and trade market that only covers sectors in country X, how much local air
-pollution would you expect in country X? In country Y?
-b. If country Y enters the carbon market for country X (as in question 4 above), how much local pollution will there be in country X and country Y?
-c. What advice can you give country X and country Y about the desirability of allowing
-international trade of carbon emissions credits?
 
 
 ```{r, include = FALSE}
@@ -527,3 +558,21 @@ pol_y_after <- 300 - unit_D_XY
 
 ```
 
+a. In a carbon cap and trade market that only covers sectors in country X, how much local air
+pollution would you expect in country X? In country Y?
+
+Before inter-country trade:   
+
+$Pollution~X= `r round(pol_x, digits = 2)`$  
+$Pollution~Y= `r round(pol_y, digits = 2)`$
+
+b. If country Y enters the carbon market for country X (as in question 4 above), how much local pollution will there be in country X and country Y?
+
+
+$Pollution~X~after~trade~with~y= `r round(pol_x_after, digits = 2)`$  
+$Pollution~Y~after~trade~with~x= `r round(pol_y_after, digits = 2)`$
+
+c. What advice can you give country X and country Y about the desirability of allowing
+international trade of carbon emissions credits?
+
+(See memo)
