@@ -332,7 +332,7 @@ plot_x <- ggplot(data.frame(x=c(0,200)), aes(x=x)) +
 
 plot_x
 ```
-####a.
+####a. Cap 
 ```{r, include = FALSE}
 
 #solve the cost for a,b,c cap for carbon
@@ -346,21 +346,32 @@ cost_cap_total <- cost_cap_A_X + cost_cap_B_X + cost_cap_C_X
 
 ```
 
-####b.
+####b. Tax
 ```{r, include = FALSE}
-#solve the benefit for a,b,c tax for carbon
+#solve the costs of abatement for a,b,c tax for carbon
+#do you have to add the tax they pay 
 
 cost_tax_A_X <- integrate(A_sup, 0, unit_A)$value
+total_A_X <- cost_cap_A_X + ((180-unit_A)*tax_price)
+
 cost_tax_B_X <- integrate(B_sup, 0, unit_B)$value
+total_A_X <- cost_cap_A_X + ((200-unit_B)*tax_price)
+
 cost_tax_C_X <- integrate(C_sup, 0, unit_C)$value
-cost_tax_total <- cost_tax_A_X + cost_tax_B_X + cost_tax_C_X
+total_A_X <- cost_cap_A_X + ((220-unit_C)*tax_price)
+
+cost_tax_total <- cost_tax_A_X + cost_tax_B_X + cost_tax_C_X #you dont need the revenue here
 
 tax_revenue_X <- 300*tax_price
 
+#tax revenue = the cost of abatement + tax they pay on the costs 
+
+
+
+
 ```
 
-####c.
-
+####c. Cap and Trade
 ```{r, include = FALSE}
 
 #solve for the benefit for a,b,c for cap and trade
