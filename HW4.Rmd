@@ -5,7 +5,7 @@ date: "5/30/2019"
 output: html_document
 ---
 
-###Homework 4
+###Technical Appendix
 
 ```{r, echo = FALSE }
 library(tidyverse)
@@ -360,7 +360,7 @@ A_trade_nc <- cost_tax_A_X + A_trans
 B_trade_nc <- cost_tax_B_X + B_trans
 C_trade_nc <- cost_tax_C_X + C_trans
 
-
+total_cost_cap <- A_trade_nc + B_trade_nc + C_trade_nc
 ```
 
 
@@ -380,7 +380,7 @@ price_lastunit_D <- D_sup(300)
 
 
 
-```{r}
+```{r, echo = FALSE}
 
 deno_ABCD <- A_coeff*B_coeff*C_coeff + D_coeff*B_coeff*C_coeff + A_coeff*D_coeff*C_coeff + A_coeff*B_coeff*D_coeff
 agg_y_int_ABCD = (A_y_int*B_coeff*C_coeff*D_coeff/deno_ABCD) + (B_y_int*A_coeff*C_coeff*D_coeff/deno_ABCD) + (C_y_int*B_coeff*A_coeff*D_coeff/deno_ABCD) + (D_y_int*B_coeff*C_coeff*A_coeff/deno_ABCD)
@@ -429,10 +429,16 @@ ggplot(data.frame(x=c(0,500)), aes(x=x)) +
   geom_vline(xintercept = unit_C_XY, linetype = "dashed", size = 0.3)+
   geom_vline(xintercept = unit_D_XY, linetype = "dashed", size = 0.3)+
   theme_pubr()
+###################
+#costs 
+
+cost_tax_A_XY <- integrate(A_sup, 0, unit_A_XY)$value
+cost_tax_B_XY <- integrate(B_sup, 0, unit_B_XY)$value
+cost_tax_C_XY <- integrate(C_sup, 0, unit_C_XY)$value
+cost_tax_D_XY <- integrate(D_sup, 0, unit_D_XY)$value
 
 
-
-#cap and trade with country y and country x
+#cap and trade with country y and country x and total costs 
 
 A_trade_xy <- (180-unit_A_XY-80)
 B_trade_xy <- (200-unit_B_XY-100)
@@ -444,8 +450,19 @@ B_trans_XY <- B_trade_xy*tax_price_ABCD #B sells this (have more than enought)
 C_trans_XY <- C_trade_xy*tax_price_ABCD #C buys this 
 D_trans_XY <- D_trade_xy*tax_price_ABCD #D sells this
 
+A_trade_nc_XY <- cost_tax_A_XY + A_trans_XY
+B_trade_nc_XY <- cost_tax_B_XY + B_trans_XY
+C_trade_nc_XY <- cost_tax_C_XY + C_trans_XY
+D_trade_nc_XY <- cost_tax_D_XY + D_trans_XY
 
+total_costs_x_ABCD <- A_trade_nc_XY + B_trade_nc_XY + C_trade_nc_XY + D_trade_nc_XY
 
+total_costs_x_ABCD
+
+total_costs_y_ABCD <- D_trade_nc_XY
+
+total_costs_y_ABCD
+#y costs = abatement costs - sell *price
 ```
 ###5. 
 Now assume that every ton of carbon emissions creates 1 ton of local air pollution. Local air pollution causes economic damages (health, environmental, etc.), but only in the country in which it is emitted. Assume there are no local air pollution regulations in either country X or country Y.
