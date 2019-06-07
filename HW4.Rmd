@@ -452,7 +452,7 @@ agg_abate_ABCD <- function(x){
   agg_coeff_ABCD*x + agg_y_int_ABCD
 }
 
-tax_price_ABCD <- agg_abate_ABCD(300)
+tax_price_ABCD <- agg_abate_ABCD(600)
 unit_A_XY <- (tax_price_ABCD - A_y_int)/A_coeff
 unit_B_XY <- (tax_price_ABCD - B_y_int)/B_coeff
 unit_C_XY <- (tax_price_ABCD - C_y_int)/C_coeff
@@ -485,7 +485,7 @@ ggplot(data.frame(x=c(0,500)), aes(x=x)) +
   scale_y_continuous(limits=c(-20,60), expand=c(0,0))+
   scale_color_brewer("Abatement", palette = "Dark2")+
   geom_hline(yintercept = tax_price_ABCD, linetype = "dashed")+
-  geom_vline(xintercept = 300, linetype = "dashed")+
+  geom_vline(xintercept = 600, linetype = "dashed")+
   geom_vline(xintercept = unit_A_XY, linetype = "dashed", size = 0.3)+
   geom_vline(xintercept = unit_B_XY, linetype = "dashed", size = 0.3)+
   geom_vline(xintercept = unit_C_XY, linetype = "dashed", size = 0.3)+
